@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "test": "react-scripts test --env=jsdom"
+    "start": "react-scripts start",
+    "test": "react-scripts test --env=jsdom",
+    "build": "react-scripts build"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",
@@ -14,3 +16,4 @@
     "react-scripts": "^5.0.1"
   }
 }
+
