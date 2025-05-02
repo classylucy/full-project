@@ -1,0 +1,16 @@
+{
+  "name": "full-project",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "react-scripts test --env=jsdom"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "jest": "^29.7.0"
+  },
+  "dependencies": {
+    "react-scripts": "^5.0.1"
+  }
+}
