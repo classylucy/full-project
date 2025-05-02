@@ -143,69 +143,7 @@ jobs:
             echo "ENABLE_MONITORING=false" >> $GITHUB_ENV
           fi
 
-      # ---- SETUP BUILD ENVIRONMENT ----
-      - name: Setup build environment
-        run: |
-          echo "Setting up build environment for ${{ env.PROJECT_TYPE }}"
-          
-          case ${{ env.PROJECT_TYPE }} in
-            nodejs|angular|nextjs|nuxtjs)
-              echo "Setting up Node.js"
-              if [[ $(grep -w "node" package.json | grep -o "[0-9.]*") ]]; then
-                NODE_VERSION=$(grep -w "node" package.json | grep -o "[0-9.]*")
-              else
-                NODE_VERSION="18.x"
-              fi
-              echo "Using Node.js version $NODE_VERSION"
-              ;;
-            python)
-              echo "Setting up Python"
-              PYTHON_VERSION=$(grep -w "python_version" Pipfile 2>/dev/null | grep -o "[0-9.]*" || echo "3.10")
-              echo "Using Python version $PYTHON_VERSION"
-              ;;
-            java-maven|java-gradle)
-              echo "Setting up Java"
-              JAVA_VERSION=$(grep -w "<java.version>" pom.xml 2>/dev/null | grep -o "[0-9.]*" || echo "17")
-              echo "Using Java version $JAVA_VERSION"
-              ;;
-            # Add more project types as needed
-          esac
-      
-      # ---- INSTALL DEPENDENCIES ----
-      - name: Set up Node.js
-        if: env.PROJECT_TYPE == 'nodejs' || env.PROJECT_TYPE == 'angular' || env.PROJECT_TYPE == 'nextjs' || env.PROJECT_TYPE == 'nuxtjs'
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: 'npm'
-          
-      - name: Set up Python
-        if: env.PROJECT_TYPE == 'python'
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-          cache: 'pip'
-          
-      - name: Set up Java
-        if: env.PROJECT_TYPE == 'java-maven' || env.PROJECT_TYPE == 'java-gradle'
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-          cache: ${{ env.PROJECT_TYPE == 'java-maven' && 'maven' || 'gradle' }}
-          
-      - name: Set up .NET
-        if: env.PROJECT_TYPE == 'dotnet'
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '6.0.x'
-          
-      - name: Set up Go
-        if: env.PROJECT_TYPE == 'golang'
-        uses: actions/setup-go@v4
-        with:
-          go-version: '1.20'
-          
+   
       - name: Install dependencies
         run: |
           echo "Installing dependencies for ${{ env.PROJECT_TYPE }}"
@@ -246,6 +184,36 @@ jobs:
               cargo fetch
               ;;
           esac
+
+
+      # ---- SETUP BUILD ENVIRONMENT ----
+      - name: Setup build environment
+        run: |
+          echo "Setting up build environment for ${{ env.PROJECT_TYPE }}"
+          
+          case ${{ env.PROJECT_TYPE }} in
+            nodejs|angular|nextjs|nuxtjs)
+              echo "Setting up Node.js"
+              if [[ $(grep -w "node" package.json | grep -o "[0-9.]*") ]]; then
+                NODE_VERSION=$(grep -w "node" package.json | grep -o "[0-9.]*")
+              else
+                NODE_VERSION="18.x"
+              fi
+              echo "Using Node.js version $NODE_VERSION"
+              ;;
+            python)
+              echo "Setting up Python"
+              PYTHON_VERSION=$(grep -w "python_version" Pipfile 2>/dev/null | grep -o "[0-9.]*" || echo "3.10")
+              echo "Using Python version $PYTHON_VERSION"
+              ;;
+            java-maven|java-gradle)
+              echo "Setting up Java"
+              JAVA_VERSION=$(grep -w "<java.version>" pom.xml 2>/dev/null | grep -o "[0-9.]*" || echo "17")
+              echo "Using Java version $JAVA_VERSION"
+              ;;
+            # Add more project types as needed
+          esac
+      
 
       # ---- HANDLE LEGACY COMPONENTS ----
       - name: Handle legacy components
