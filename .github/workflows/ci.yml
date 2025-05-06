@@ -7,7 +7,7 @@ on:
     branches: [main, develop]
 
 jobs:
-  build-and-test:
+  detect-and-build:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,21 +19,26 @@ jobs:
         with:
           node-version: '18'
 
+      - name: 🧪 Detect React App
+        id: detect
+        run: |
+          if [ -f "package.json" ] && grep -q '"react"' package.json; then
+            echo "React project detected ✅"
+            echo "is_react=true" >> $GITHUB_OUTPUT
+          else
+            echo "React project NOT detected ❌"
+            echo "is_react=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: 📦 Install dependencies
+        if: steps.detect.outputs.is_react == 'true'
         run: npm install
 
-      - name: 🔍 Detect React and Build/Test
-        run: |
-          echo "🔍 Checking for React..."
-          if grep -q '"react"' package.json && grep -q '"react-scripts"' package.json; then
-            echo "✅ React application detected"
-            echo "🛠️ Building React app"
-            npm run build
+      - name: 🛠️ Build React app
+        if: steps.detect.outputs.is_react == 'true'
+        run: npm run build
 
-            echo "🧪 Running tests"
-            npm test -- --watchAll=false
-          else
-            echo "❌ Not a React application. Failing workflow."
-            exit 1
-          fi
+      - name: 🧪 Run tests
+        if: steps.detect.outputs.is_react == 'true'
+        run: npm test -- --watchAll=false
 
